@@ -42,17 +42,58 @@ my_mute <- function(node_df, connect_df, mutation_tracking,max_node, max_marker,
 #  connect_df = test$connects
 if(type == 1){
   
+  ## construct the graph levels
+  node_df$level <- 0
+  for(i in 1:nrow(connect_df)){
+    node_df$level[ connect_df$Out[i] ] <- max( node_df$level[ connect_df$Out[i] ],
+                                               node_df$level[ connect_df$In[i] ] + 1)
+  }
+  node_df$level[node_df$node_type == "output"] <- max(node_df$level + 1)
+  node_df$max_in <-  nrow(node_df) - rank(node_df$level,ties.method = "max")
+  
   # random select a node with "in" capacity
   in_sum <- as.data.frame(table(connect_df$In))
   colnames(in_sum) <- c("node_id","current_in")
-  in_sum$node_id <- as.numeric(as.character(in_sum$node_id))
-  in_sum$max_in <- length(node_df$node_id[node_df$node_type != "sensor"])
-  tem_index <- in_sum$node_id %in% node_df$node_id[node_df$node_type =="hidden"]
-  in_sum$max_in[tem_index] <- in_sum$max_in[tem_index] - 1
-  in_node_id <- sample(in_sum$node_id[in_sum$current_in < in_sum$max_in ], 1 )
+  in_sum <- merge(in_sum, node_df )
+  sample_pop <- in_sum$node_id[in_sum$current_in < in_sum$max_in ]
   
+  if(length(sample_pop) == 0){
+    
+    return(list(node_df=node_df,
+                connect_df = connect_df, 
+                mutation_tracking =mutation_tracking ,
+                max_node = max_node, 
+                max_marker = max_marker 
+    ))
+    
+  }
+  
+  if(length(sample_pop) == 1){
+    in_node_id <- sample_pop
+  }else{
+    in_node_id <- sample(   sample_pop   ,1)
+  }
+  in_node_id <- as.numeric(as.character(in_node_id))
+
   # random sample a node with "in" capacity and not yet connnected with the randomly selected in_node_id
-  sample_pop <-  connect_df$Out[!connect_df$Out %in%   unique(connect_df$Out[connect_df$In == in_node_id])]
+  sample_pop <- unique( connect_df$Out[!connect_df$Out %in% unique(c(in_node_id,connect_df$Out[connect_df$In == in_node_id]))])
+  sample_pop <- sample_pop[node_df$level[sample_pop] > node_df$level[in_node_id]]
+  
+  
+  if(length(sample_pop) == 0){
+    
+    node_df$level <- NULL
+    node_df$max_in <- NULL
+    
+    return(list(node_df=node_df,
+                connect_df = connect_df, 
+                mutation_tracking =mutation_tracking ,
+                max_node = max_node, 
+                max_marker = max_marker 
+    ))
+    
+  }
+  
   if(length(sample_pop) == 1){
     out_node_id <- sample_pop
   }else{
@@ -90,6 +131,9 @@ if(type == 1){
     connect_df <- rbind(connect_df, new_connect)
     
   }
+  node_df$level <- NULL
+  node_df$max_in <- NULL
+  
   return(list(node_df=node_df,
               connect_df = connect_df, 
               mutation_tracking =mutation_tracking ,
@@ -224,9 +268,20 @@ nn_plot <- function(connect_df){
   node_list <- merge(node_list, out_summary, all.x = T)
   node_list[is.na(node_list)] <- 0
   
-  node_list$level <-  node_list$out_sum - node_list$in_sum 
-  node_list$level[node_list$in_sum == 0] <- max(node_list$level) + 1
-  node_list$level[node_list$out_sum == 0] <- min(node_list$level) - 1
+  
+  
+  node_list$level <-  0
+  node_list$level[node_list$in_sum == 0 ] <- 999
+  
+  for(i in 1:nrow(connect_df)){
+    
+    if(node_list$level[connect_df$In[i]] >= node_list$level[connect_df$Out[i]]){
+      node_list$level[connect_df$Out[i]] <- node_list$level[connect_df$In[i]]  + 1
+    }
+    
+  }
+  
+  
   node_list$level <- rank(node_list$level, ties.method = "min")
   node_list$level <-as.numeric(as.factor(node_list$level ))
   
@@ -257,7 +312,7 @@ nn_plot <- function(connect_df){
     
     if(connect_df$Disabled[i] == 'N'){
       x <- c(node_list$x[connect_df$In[i]] , node_list$x[connect_df$Out[i]] )
-      y <- c(node_list$y[connect_df$In[i]] , node_list$y[connect_df$Out[i]] - 1 )
+      y <- c(node_list$y[connect_df$In[i]] , node_list$y[connect_df$Out[i]] )
       lines(x,y,col= i)
     }
     
