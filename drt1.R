@@ -1,8 +1,12 @@
 ## INITILIZATION ##
+rm(list=ls())
 source("add_new_connection.R")
 source("add_new_node.R")
 source("nn_init.R")
 source("nn_plot.R")
+source("get_node_info.R")
+
+
 test <- nn_init(2)
 
 
@@ -21,7 +25,7 @@ my_mute <- function(node_df, connect_df, mutation_tracking,max_node, max_marker,
   #  connect_df = test$connects
   if(type == 1){
     
-    return(add_new_connection(node_df, connect_df, mutation_tracking, max_marker))
+    return(add_new_connection(node_df, connect_df,max_node,  mutation_tracking, max_marker))
     
   }else if(type == 2){
     return(add_new_node(node_df, connect_df, max_node, mutation_tracking, max_marker))
@@ -35,15 +39,19 @@ my_mute <- function(node_df, connect_df, mutation_tracking,max_node, max_marker,
 
 
 
+
+nn_plot(test$connects)
+
 test_m <- my_mute(
   node_df = test$nodes, 
   connect_df = test$connects ,
-  mutation_tracking,
-  max_node,
-  max_marker, 
+  mutation_tracking = mutation_tracking,
+  max_node = max_node,
+  max_marker= max_marker, 
   type = 2
 )
 
+test_m
 
 test_m <- my_mute(
   node_df = test_m$node_df, 
@@ -51,9 +59,9 @@ test_m <- my_mute(
   mutation_tracking = test_m$mutation_tracking,
   max_node = test_m$max_node,
   max_marker= test_m$max_marker, 
-  type = 1
+  type = 2
 )
+connect_df <- test_m$connect_df
 test_m
 nn_plot(test_m$connect_df)
-
-
+get_node_info(test_m$connect_df)
