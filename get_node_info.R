@@ -9,7 +9,7 @@ get_node_info <- function(connect_df){
   tem_index <- tem_connect_df$In %in% sensor_node
   while( sum(tem_index) > 0 ){
     level_index <- unique(tem_connect_df$Out[tem_index & tem_connect_df$Disabled == 'N'])
-    node_list$level[level_index] <- max_level + 1
+    node_list$level[node_list$node_id %in% level_index] <- max_level + 1
     max_level <- max_level + 1
     tem_index <- tem_connect_df$In %in% level_index
     
@@ -29,7 +29,7 @@ get_node_info <- function(connect_df){
   
   node_list$possible_connection <- NA
   for(i in 1:nrow(node_list)){
-    current_connected <- connect_df$Out[connect_df$In == i]  #including disabled
+    current_connected <- connect_df$Out[connect_df$In == node_list$node_id[i] ]  #including disabled
     all_possible_connection <- node_list$node_id[node_list$level > node_list$level[i]]
     new_possible_connection <- all_possible_connection[!all_possible_connection %in% current_connected]  
     node_list$possible_connection[i] <- paste(new_possible_connection, sep="", collapse=",")

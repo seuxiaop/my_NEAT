@@ -16,23 +16,7 @@ lines(points_x, points_y)
 
 
 nn_plot <- function(connect_df){
-  
-  # node_list <- data.frame(node_id= unique(c(connect_df$In,connect_df$Out)))
-  # in_summary <- as.data.frame(table(connect_df$In))
-  # colnames(in_summary) <- c("node_id","in_sum")
-  # out_summary <- as.data.frame(table(connect_df$Out))
-  # colnames(out_summary) <- c("node_id","out_sum")
-  # 
-  # node_list <- merge(node_list, in_summary, all.x = T )
-  # node_list <- merge(node_list, out_summary, all.x = T)
-  # node_list[is.na(node_list)] <- 0
-  # 
-  # node_list$level <-  node_list$out_sum - node_list$in_sum 
-  # node_list$level[node_list$in_sum == 0] <- max(node_list$level) + 1
-  # node_list$level[node_list$out_sum == 0] <- min(node_list$level) - 1
-  # node_list$level <- rank(node_list$level, ties.method = "min")
-  # node_list$level <-as.numeric(as.factor(node_list$level ))
-  
+
   node_list <- get_node_info(connect_df)
   
   level_df <- as.data.frame(table(node_list$level))
@@ -63,9 +47,9 @@ nn_plot <- function(connect_df){
   for(i in 1:nrow(connect_df)){
     
     if(connect_df$Disabled[i] == 'N'){
-      x <- c(node_list$x[connect_df$In[i]] , node_list$x[connect_df$Out[i]] )
-      y <- c(node_list$y[connect_df$In[i]] , node_list$y[connect_df$Out[i]] )
-      if(x[1]==x[2] & node_list$level[connect_df$In[i]] <  node_list$level[connect_df$Out[i]] - 1 ){
+      x <- c(node_list$x[node_list$node_id== connect_df$In[i]] , node_list$x[node_list$node_id==connect_df$Out[i]] )
+      y <- c(node_list$y[node_list$node_id==connect_df$In[i]] , node_list$y[node_list$node_id==connect_df$Out[i]] )
+      if(x[1]==x[2] & node_list$level[node_list$node_id==connect_df$In[i]] <  node_list$level[node_list$node_id==connect_df$Out[i]] - 1 ){
         my_curve(x,y)  
       }else{
         lines(x,y)

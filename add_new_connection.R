@@ -1,5 +1,8 @@
-add_new_connection <- function(node_df, connect_df,max_node,  mutation_tracking, max_marker){
+add_new_connection <- function(nn, max_node,  mutation_tracking, max_marker){
   
+  
+  node_df <- nn$node_df
+  connect_df <- nn$connect_df
   
   node_list <- get_node_info(connect_df)
   
@@ -7,8 +10,7 @@ add_new_connection <- function(node_df, connect_df,max_node,  mutation_tracking,
   # random select a node with "in" capacity
   sample_pop <-  node_list$node_id[!(node_list$possible_connection) ==""]
   if(length(sample_pop) == 0){
-    return(list(node_df=node_df,
-                connect_df = connect_df, 
+    return(list(nn = nn, 
                 mutation_tracking =mutation_tracking ,
                 max_node = max_node, 
                 max_marker = max_marker 
@@ -56,9 +58,11 @@ add_new_connection <- function(node_df, connect_df,max_node,  mutation_tracking,
     connect_df <- rbind(connect_df, new_connect)
     
   }
-  return(list(node_df=node_df,
-              connect_df = connect_df, 
-              mutation_tracking =mutation_tracking ,
+  nn <- list(node_df=node_df,
+             connect_df = connect_df)
+  
+  return(list(nn = nn,
+              mutation_tracking =mutation_tracking,
               max_node = max_node, 
               max_marker = max_marker 
   ))

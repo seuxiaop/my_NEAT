@@ -1,4 +1,8 @@
-add_new_node <- function(node_df, connect_df,max_node, mutation_tracking, max_marker){
+add_new_node <- function(nn,max_node, mutation_tracking, max_marker){
+  
+  node_df <- nn$node_df
+  connect_df <- nn$connect_df
+  
   # add node
   index <- sample(connect_df$Marker[connect_df$Disabled=='N'] , 1)
   index <- which(connect_df$Marker == index & connect_df$Disabled=='N')
@@ -76,11 +80,13 @@ add_new_node <- function(node_df, connect_df,max_node, mutation_tracking, max_ma
   }
   
   
-  return(
-    list(node_df=node_df,
-         connect_df = connect_df, 
-         mutation_tracking =mutation_tracking ,
-         max_node = max_node, 
-         max_marker = max_marker)
-  )
+  nn <- list(node_df=node_df,
+             connect_df = connect_df)
+  
+  return(list(nn = nn,
+              mutation_tracking =mutation_tracking,
+              max_node = max_node, 
+              max_marker = max_marker ))
+  
+
 }
