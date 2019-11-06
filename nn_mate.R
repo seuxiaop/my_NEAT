@@ -16,7 +16,7 @@ nn_mate <- function(nn1, nn2, disable_p = 0.8){
     ifelse(is.na(connect_df$Disabled_p2), 'N',connect_df$Disabled_p2) == 'Y' 
   
   disabled_node_list <-  connect_df$Marker[index]
-  disabled_node_list <- disabled_node_list[runif(length(disabled_node_list)) <= 0.8]
+  disabled_node_list <- disabled_node_list[runif(length(disabled_node_list)) <= disable_p]
 
   if(length(disabled_node_list) >0){
     new_connect_df$Disabled[new_connect_df$Marker %in% disabled_node_list] <- 'Y'

@@ -16,16 +16,16 @@ add_new_connection <- function(nn, max_node,  mutation_tracking, max_marker){
                 max_marker = max_marker 
     ))
   }
-
+  
   if(length(sample_pop) == 1){
     in_node_id <- sample_pop
   }else{
     in_node_id <- sample(sample_pop   ,1)
   }
-  
+   
 
   # random sample a node with "in" capacity and not yet connnected with the randomly selected in_node_id
-  sample_pop <-  unlist(strsplit(node_list$possible_connection[in_node_id],","))
+  sample_pop <-  unlist(strsplit(node_list$possible_connection[node_list$node_id == in_node_id],","))
   out_node_id <- sample(length(sample_pop), 1)
   out_node_id <- as.numeric(sample_pop[out_node_id])
   
@@ -54,7 +54,7 @@ add_new_connection <- function(nn, max_node,  mutation_tracking, max_marker){
   }else{
     
     ## only update connect genome 
-    new_connect <- data.frame(In = in_node_id, Out = out_node_id, Weight = runif(1), Marker = new_marker, Disabled = "N")
+    new_connect <- data.frame(In = in_node_id, Out = out_node_id, Weight = runif(1), Marker =mutation_tracking$new_marker1[inno_index] , Disabled = "N")
     connect_df <- rbind(connect_df, new_connect)
     
   }
