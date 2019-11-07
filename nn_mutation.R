@@ -9,11 +9,7 @@ nn_mutation <- function(nn, mutation_tracking,max_node, max_marker,
     
     nn <- weight_mutation(nn, scale = scale, p = p)
     
-    return(list(nn = nn,
-                mutation_tracking =mutation_tracking,
-                max_node = max_node, 
-                max_marker = max_marker 
-    ))
+    return(nn)
   }
   
   
