@@ -46,9 +46,9 @@ max_marker <- input_size * output_size
 ## do neat initialization 
 
 
-neat_pop <- lapply(rep(input_size, 150), FUN= nn_init)
+neat_pop <- lapply(rep(input_size, pop_size), FUN= nn_init)
 
-while(gen_id <max_gen){
+while(gen_id <50){
 
   ## eval current genration
   source("case_eval.R")
@@ -56,8 +56,8 @@ while(gen_id <max_gen){
   ## get next generation
   source("case_reproduction.R")
   gen_id <- gen_id + 1
-  summary(eval_final)
-  
+  print(mutation_tracking)
+  print(max_marker)
 }
 
 

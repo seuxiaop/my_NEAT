@@ -5,7 +5,8 @@ eval2 <- unlist(lapply(neat_pop, FUN = nn_eval,fun_act=my_fun, input = c(1,0,1) 
 eval3 <- unlist(lapply(neat_pop, FUN = nn_eval,fun_act=my_fun, input = c(1,1,0) ))
 eval4 <- unlist(lapply(neat_pop, FUN = nn_eval,fun_act=my_fun, input = c(1,1,1) ))
 eval_final <- 4 - (abs(eval1) + abs(1 - eval2) + abs(1-eval3) + abs(eval4))
-
+print(summary(eval_final))
+eval_final[is.na(eval_final)] <- min(eval_final,na.rm = T) 
 ## do subspecies ##
 
 if(gen_id ==0){

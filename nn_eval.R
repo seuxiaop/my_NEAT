@@ -2,7 +2,7 @@ nn_eval <- function(nn, fun_act, input = c(1,1) ){  # input length equals to the
   
   node_df <- nn$node_df
   connect_df <- nn$connect_df
-  node_df$value <- 0
+  node_df$value <- NA
   node_df$value[node_df$node_type == "sensor"] <- input
   node_info <- get_node_info(connect_df)
   node_df <- merge(node_df, node_info[,c("node_id","level")])

@@ -1,3 +1,4 @@
+save.image()
 ## get best individual in each species and add to next generation
 
 best_id <- summary_df$id[summary_df$fitness_init == summary_df$best_fit]
@@ -7,7 +8,7 @@ new_gen_species <- best_id_species
 ## get worse individual and remove it
 
 worst_id <- summary_df$id[summary_df$fitness_init == summary_df$worst_fit]
-summary_df <- summary_df[!summary_df$id == worst_id, ]
+summary_df <- summary_df[!summary_df$id %in% worst_id, ]
 
 ## random select from rest pop and do mutation 
 
@@ -66,13 +67,20 @@ for( i in species_summary$species){
   offspring_n_mutation <- species_summary$offspring_n_mutation[species_summary$species == i]
   offspring_n_crossover <- species_summary$offspring_n_crossover[species_summary$species == i]
   
-  id_offspring_mutation <- sample(summary_df$id[summary_df$species == i], size = offspring_n_mutation)
+  id_offspring_mutation <- sample(summary_df$id[summary_df$species == i], 
+                                  size = offspring_n_mutation,
+                                  prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
+                                  )
   neat_pop_next <- c(neat_pop_next,neat_pop[id_offspring_mutation])
   
   new_gen_species <- c(new_gen_species, rep(i, offspring_n_mutation))
   
-  p1 <- sample(summary_df$id[summary_df$species == i], size = offspring_n_crossover)
-  p2 <- sample(summary_df$id[summary_df$species == i], size = offspring_n_crossover)
+  p1 <- sample(summary_df$id[summary_df$species == i], size = offspring_n_crossover, replace = T,
+               prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
+               )
+  p2 <- sample(summary_df$id[summary_df$species == i], size = offspring_n_crossover, replace = T,
+               prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
+               )
   
   neat_pop_next_mate <- mapply(FUN = nn_mate, nn1 = neat_pop[p1], nn2= neat_pop[p2],
                                fitness1 = summary_df$fitness_adj[match(p1,summary_df$id)] , fitness2 =  summary_df$fitness_adj[match(p2,summary_df$id)],
@@ -82,4 +90,4 @@ for( i in species_summary$species){
   new_gen_species <- c(new_gen_species, rep(i, offspring_n_crossover))
   
 }
-neat_pop <- neat_pop_next
+neat_pop <- neat_pop_next[1:pop_size]
