@@ -1,4 +1,4 @@
-nn_mate <- function(nn1, nn2, fitness1 , fitness2, disable_p = 0.8){
+nn_mate <- function(nn1, nn2, fitness1 , fitness2, disable_p = 0.7){
   
   connect_df <- merge(nn1$connect_df,nn2$connect_df, all.x = T, all.y = T,by = "Marker", suffixes = c("_p1","_p2"))
   connect_df$random_pick <- ifelse(runif(nrow(connect_df))<=0.5,1,2)

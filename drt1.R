@@ -29,7 +29,9 @@ mutation_only_rate <- 0.25
 new_connection_rate <- 0.05
 new_node_rate <- 0.03
 max_gen <- 5
-  
+weight_mutation_rate <- 0.8
+node_mutation_rate <- 0.03
+link_mutation_rate <- 0.05
 ## parameter initilization ##
 gen_id <- 0
 
@@ -49,15 +51,14 @@ max_marker <- input_size * output_size
 neat_pop <- lapply(rep(input_size, pop_size), FUN= nn_init)
 
 while(gen_id <50){
-
+  cat("gen_id =", gen_id,"\n")
   ## eval current genration
   source("case_eval.R")
   
   ## get next generation
-  source("case_reproduction.R")
+  source("case_reproduction1.R")
   gen_id <- gen_id + 1
-  print(mutation_tracking)
-  print(max_marker)
+  
 }
 
 
