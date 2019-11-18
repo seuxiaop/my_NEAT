@@ -30,8 +30,8 @@ new_connection_rate <- 0.05
 new_node_rate <- 0.03
 max_gen <- 5
 weight_mutation_rate <- 0.8
-node_mutation_rate <- 0.03
-link_mutation_rate <- 0.05
+node_mutation_rate <- 0.1
+link_mutation_rate <- 0.2
 ## parameter initilization ##
 gen_id <- 0
 
@@ -57,14 +57,23 @@ while(gen_id <50){
   
   ## get next generation
   source("case_reproduction1.R")
+  
   gen_id <- gen_id + 1
   
+  ## reset mutation_tracking 
+  mutation_tracking <- data.frame(
+    name = NULL, new_node_id = NULL,
+    new_marker1 = NULL, In1= NULL, Out1 = NULL,
+    new_marker2 = NULL, In2= NULL, Out2 = NULL
+  )
 }
 
 
-
-
-
-
+# 
+# best_nn <- neat_pop[[which(neat_pop_fitness == max(neat_pop_fitness))]]
+# best_fitness <- max(neat_pop_fitness)
+# nn_plot(best_nn$connect_df)
+# 
+# nn_plot(neat_pop[[128]]$connect_df)
 
 

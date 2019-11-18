@@ -15,11 +15,11 @@ if(gen_id ==0){
   tem_ind <- 1:pop_size
   species_list <- unique(neat_pop_species)
   pop_rep <- list()
-  for(i in 1:species_list ){
+  for(i in species_list ){
       sample_species_nn <- neat_pop[sample(tem_ind[neat_pop_species == i], 1)  ]
       pop_rep <- c(pop_rep, sample_species_nn)
   }
-  species_vec <- get_sub_species(neat_pop, pop_rep, dist_torlerance=3) 
+  species_vec <- get_sub_species(neat_pop, pop_rep, dist_torlerance= 3) 
   eval_final <- neat_pop_fitness
   
 }

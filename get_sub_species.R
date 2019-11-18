@@ -1,5 +1,5 @@
 #pop_rep <- list(neat_pop[[sample(150,1)]])
-get_sub_species <- function(neat_pop, pop_rep, dist_torlerance=0.243){
+get_sub_species <- function(neat_pop, pop_rep, dist_torlerance=3){
   species_vec <- rep(0, length(neat_pop))
   ids <- 1:length(neat_pop)
   n <- length(pop_rep)

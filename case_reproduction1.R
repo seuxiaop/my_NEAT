@@ -9,27 +9,38 @@ for( i in species_summary$species){
   
   ## get worse individual and remove it
   
-  worst_id <- summary_df$id[summary_df$fitness_init == summary_df$worst_fit & summary_df$species == i]
-  summary_df <- summary_df[!summary_df$id %in% worst_id, ]
+  # worst_id <- summary_df$id[summary_df$fitness_init == summary_df$worst_fit & summary_df$species == i]
+  # summary_df <- summary_df[!summary_df$id %in% worst_id, ]
   
   
   ### get crossover offspring
   
   offspring_n_crossover <- species_summary$offspring_n_crossover[species_summary$species == i]
   
-  p1 <- sample(summary_df$id[summary_df$species == i], 
-               replace = T,
-               size = offspring_n_crossover,
-               prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
-  )
+  p_pop <- summary_df$id[summary_df$species == i]
+  if(length(p_pop) > 1){
+    p1 <- sample(p_pop, 
+                 replace = T,
+                 size = offspring_n_crossover,
+                 prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
+    )
+  }else{
+    p1 <- rep(p_pop, offspring_n_crossover )
+  }
+  
+  
   p1_finess <- summary_df$fitness_adj[match(p1,summary_df$id)]
   p1 <- neat_pop[p1]
   
-  p2 <- sample(summary_df$id[summary_df$species == i], 
-               replace = T,
-               size = offspring_n_crossover,
-               prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
-  )
+  if(length(p_pop) > 1){
+    p2 <- sample(p_pop, 
+                 replace = T,
+                 size = offspring_n_crossover,
+                 prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
+    )
+  }else{
+    p2 <- rep(p_pop,offspring_n_crossover )
+  }
   p2_finess <- summary_df$fitness_adj[match(p2,summary_df$id)]
   p2 <- neat_pop[p2]
   
@@ -88,11 +99,16 @@ for( i in species_summary$species){
  
   ### get mutation only offspring
   offspring_n_mutation <- species_summary$offspring_n_mutation[species_summary$species == i]
-  p <- sample(summary_df$id[summary_df$species == i], 
-               replace = T,
-               size = offspring_n_mutation,
-               prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
-  )
+  if(length(p_pop) > 1){
+    p <- sample(p_pop, 
+                replace = T,
+                size = offspring_n_mutation,
+                prob = summary_df$fitness_adj[summary_df$species == i]/sum(summary_df$fitness_adj[summary_df$species == i])
+    )
+  }else{
+    p <- rep(p_pop, offspring_n_mutation)
+  }
+  
   offspring_mutation <- neat_pop[p]
   
   weigth_mutation_vec <- (runif(offspring_n_mutation) <= weight_mutation_rate)
