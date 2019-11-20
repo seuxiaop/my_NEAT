@@ -6,7 +6,7 @@ get_sub_species <- function(neat_pop, pop_rep, dist_torlerance=3){
   
   for(i in 1:n){
     
-    dist_vec <- unlist(lapply(neat_pop, FUN =nn_dist, nn2 = pop_rep[[i]],c1 = 1,c2 = 1,c3 = 0.4))
+    dist_vec <- unlist(lapply(neat_pop[ids], FUN =nn_dist, nn2 = pop_rep[[i]],c1 = 1,c2 = 1,c3 = 0.4))
     index <- dist_vec < dist_torlerance
     in_group_id <- ids[index]
     species_vec[in_group_id] <- i

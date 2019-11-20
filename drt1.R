@@ -54,9 +54,10 @@ while(gen_id <50){
   cat("gen_id =", gen_id,"\n")
   ## eval current genration
   source("case_eval.R")
+  print(species_summary)
   
   ## get next generation
-  source("case_reproduction1.R")
+  source("case_reproduction2.R")
   
   gen_id <- gen_id + 1
   
@@ -69,11 +70,12 @@ while(gen_id <50){
 }
 
 
-# 
-# best_nn <- neat_pop[[which(neat_pop_fitness == max(neat_pop_fitness))]]
-# best_fitness <- max(neat_pop_fitness)
-# nn_plot(best_nn$connect_df)
-# 
-# nn_plot(neat_pop[[128]]$connect_df)
 
+best_nn <- neat_pop[[which(neat_pop_fitness == max(neat_pop_fitness))]]
+best_fitness <- max(neat_pop_fitness)
+nn_plot(best_nn$connect_df)
 
+nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,0,0))
+nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,0,1))
+nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,1,0))
+nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,1,1))

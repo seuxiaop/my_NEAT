@@ -16,7 +16,7 @@ if(gen_id ==0){
   species_list <- unique(neat_pop_species)
   pop_rep <- list()
   for(i in species_list ){
-      sample_species_nn <- neat_pop[sample(tem_ind[neat_pop_species == i], 1)  ]
+      sample_species_nn <- neat_pop[ sample(tem_ind[neat_pop_species == i], 1)  ]
       pop_rep <- c(pop_rep, sample_species_nn)
   }
   species_vec <- get_sub_species(neat_pop, pop_rep, dist_torlerance= 3) 
@@ -32,7 +32,11 @@ species_summary <- summary_df %>% group_by(species) %>% summarise(species_freq =
 summary_df <- merge(summary_df, species_summary)
 summary_df$fitness_adj <- summary_df$fitness_init/summary_df$species_freq
 species_summary <- summary_df %>% group_by(species) %>% summarise(fit_adj_sum = sum(fitness_adj)) %>% as.data.frame()
-species_summary$offspring_n <- round(species_summary$fit_adj_sum/sum(species_summary$fit_adj_sum) * pop_size,0)
-species_summary$offspring_n[1] <- pop_size - sum(species_summary$offspring_n) + species_summary$offspring_n[1]
+species_summary$offspring_n <- floor(species_summary$fit_adj_sum/sum(species_summary$fit_adj_sum) * pop_size)
+n <-  pop_size - sum(species_summary$offspring_n)
+if(n> 0){
+  species_summary$offspring_n[1:n] <- species_summary$offspring_n[1:n] + 1
+}
 species_summary$offspring_n_mutation <- round(species_summary$offspring_n * mutation_only_rate, 0 )
 species_summary$offspring_n_crossover <- species_summary$offspring_n - species_summary$offspring_n_mutation - 1
+

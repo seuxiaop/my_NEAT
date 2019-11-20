@@ -10,7 +10,7 @@ nn_dist <- function(nn1,nn2,c1 = 1,c2 = 1,c3 = 0.4){
   n_unmatched <-  sum(is.na(connect_df$In.x)) + sum(is.na(connect_df$In.y))
   matched  <- (!is.na(connect_df$In.x) ) & (!is.na(connect_df$In.y) )
   n_max <- max(nrow(connect_df1), nrow(connect_df2))
-  n_excess <- nrow(connect_df) - max((1:nrow(connect_df))[matched])
+  n_excess <- abs(max((1:nrow(connect_df))[!is.na(connect_df$In.x)]) - max((1:nrow(connect_df))[!is.na(connect_df$In.y)]) )
   n_disjoin <- n_unmatched - n_excess
   w_avg_diff <- mean(abs( connect_df$Weight.x[matched ] - connect_df$Weight.y[matched ]))
  
