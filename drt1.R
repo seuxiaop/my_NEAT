@@ -26,12 +26,12 @@ input_size <- 3
 output_size <- 1
 mutation_rate <- 0.8
 mutation_only_rate <- 0.25
-new_connection_rate <- 0.05
-new_node_rate <- 0.03
+# new_connection_rate <- 0.05
+# new_node_rate <- 0.03
 max_gen <- 5
 weight_mutation_rate <- 0.8
-node_mutation_rate <- 0.1
-link_mutation_rate <- 0.2
+node_mutation_rate <- 0.03
+link_mutation_rate <- 0.05
 ## parameter initilization ##
 gen_id <- 0
 
@@ -49,8 +49,8 @@ max_marker <- input_size * output_size
 
 
 neat_pop <- lapply(rep(input_size, pop_size), FUN= nn_init)
-
-while(gen_id <50){
+max_fit <- 0
+while(gen_id <100){
   cat("gen_id =", gen_id,"\n")
   ## eval current genration
   source("case_eval.R")
@@ -58,6 +58,9 @@ while(gen_id <50){
   
   ## get next generation
   source("case_reproduction2.R")
+ 
+  max_fit <- max(neat_pop_fitness) 
+  cat("max_fit=", max_fit, "\n")
   
   gen_id <- gen_id + 1
   
@@ -71,7 +74,7 @@ while(gen_id <50){
 
 
 
-best_nn <- neat_pop[[which(neat_pop_fitness == max(neat_pop_fitness))]]
+best_nn <- neat_pop[[which(neat_pop_fitness == max(neat_pop_fitness))[1]]]
 best_fitness <- max(neat_pop_fitness)
 nn_plot(best_nn$connect_df)
 

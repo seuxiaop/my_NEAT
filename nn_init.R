@@ -6,7 +6,7 @@ nn_init <- function(n_input = 2){
   )
   connect_df <- data.frame(In = (1:n_input), 
                            Out = rep(n_input + 1, n_input),
-                           Weight = runif(n_input, min= -1, max = 1),
+                           Weight = runif(n_input, min= -0.5, max = 0.5),
                            Marker = (1:n_input),
                            Disabled = rep("N",n_input)
   )

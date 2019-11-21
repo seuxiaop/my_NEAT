@@ -4,8 +4,13 @@ save.image()
 neat_pop_bk <- neat_pop
 
 ## get offspring by species 
+pop_rep <- list()
 
 for( i in species_summary$species){
+  
+  rep_id <- summary_df$id[summary_df$species == i]
+  
+  pop_rep <- c(pop_rep, neat_pop[rep_id[1]] )
   
   ## get worse individual and remove it
 
@@ -13,14 +18,13 @@ for( i in species_summary$species){
   n_i <- length(summary_df$id[ summary_df$species == i])
   
   ### reproduce within species ###
-  if(n_i == 1){
-    index <- summary_df$species == i 
-  }else{
-    index <- summary_df$species == i & (!summary_df$id %in% worst_id)  
+  index <- summary_df$species == i & (!summary_df$id %in% worst_id)  
+  if(sum(index) ==0){
+    index <- summary_df$species == i
   }
   
   p <- neat_pop[index]
-  p_fitness <- summary_df$fitness_adj[index]
+  p_fitness <- summary_df$fitness_init[index]
   n <- length(p)
   
   if( n > 0 ){
@@ -31,15 +35,17 @@ for( i in species_summary$species){
       if(n > 1){
         p1 <- sample(1:n, 
                replace = T,
-               size = offspring_n_crossover,
-               prob = p_fitness)
+               size = offspring_n_crossover
+               , prob = p_fitness/sum(p_fitness)
+               )
         p1_finess <- p_fitness[p1]
         p1 <- p[p1]
         
         p2 <- sample(1:n, 
                      replace = T,
-                     size = offspring_n_crossover,
-                     prob = p_fitness)
+                     size = offspring_n_crossover
+                     ,prob = p_fitness/sum(p_fitness)
+                     )
         p2_finess <- p_fitness[p2]
         p2 <- p[p2]
         
@@ -66,7 +72,9 @@ for( i in species_summary$species){
     offspring_n_mutation <- species_summary$offspring_n_mutation[species_summary$species == i]
     if(offspring_n_mutation >0 ){
       if(n > 1){
-        index <- sample(1:n, replace = T, size = offspring_n_mutation, prob = p_fitness )
+        index <- sample(1:n, replace = T, size = offspring_n_mutation
+                        , prob = p_fitness/sum(p_fitness)
+                        )
         offspring_mutation <- p[index]
       }else{
         index <- rep(1,offspring_n_mutation)
@@ -81,6 +89,7 @@ for( i in species_summary$species){
     
   }else{
     offspring <- NULL
+    stop("empty species found")
   }
   
   n_offspring <- length(offspring)
@@ -146,15 +155,25 @@ for( i in species_summary$species){
     eval3 <- unlist(lapply(offspring, FUN = nn_eval,fun_act=my_fun, input = c(1,1,0) ))
     eval4 <- unlist(lapply(offspring, FUN = nn_eval,fun_act=my_fun, input = c(1,1,1) ))
     eval_final <- 4 - (abs(eval1) + abs(1 - eval2) + abs(1-eval3) + abs(eval4))
-    eval_final[is.na(eval_final)] <- -1
+    eval_final[is.na(eval_final)] <- 0
     
     offspring_fitness <- eval_final
     
-    ## put best nn from parent generation into 
+    # n_offspring <- length(offspring)
+    # offspring <- c(offspring,p)
+    # offspring_fitness <- c(offspring_fitness, p_fitness)
+    # index <- sample(1:length(offspring),size = n_offspring, replace = T, prob = offspring_fitness/sum(offspring_fitness))
+    # offspring <- offspring[index]
+    # offspring_fitness <- offspring_fitness[index]
+    # 
     
-    best_id <- summary_df$id[summary_df$fitness_init == summary_df$best_fit & summary_df$species == i ]
-    offspring <- c(neat_pop[best_id[1]],offspring)
-    offspring_fitness <- c(summary_df$fitness_init[best_id[1]],offspring_fitness)
+    ## put best nn from parent generation into 
+    if(species_summary$size_flag[species_summary$species == i] == 1){
+      best_id <- summary_df$id[summary_df$fitness_init == summary_df$best_fit & summary_df$species == i ]
+      offspring <- c(neat_pop[best_id[1]],offspring)
+      offspring_fitness <- c(summary_df$fitness_init[ summary_df$id ==best_id[1]],offspring_fitness)
+    }
+    
     
     # offspring <- offspring[1:pop_size]
     # offspring_fitness <- offspring_fitness[1:pop_size]
@@ -177,4 +196,4 @@ for( i in species_summary$species){
 neat_pop <- neat_pop_next[1:pop_size]
 neat_pop_fitness <- neat_pop_fitness[1:pop_size]
 neat_pop_species <- neat_pop_species[1:pop_size]
-head(neat_pop)
+

@@ -4,7 +4,7 @@ nn_mate <- function(nn1, nn2, fitness1 , fitness2, disable_p = 0.7){
   connect_df$random_pick <- ifelse(runif(nrow(connect_df))<=0.5,1,2)
   connect_df$fitness_pick <- ifelse((fitness1 == fitness2), 0, ifelse(fitness1 > fitness2,1,2))
   connect_df$final_pick <- connect_df$random_pick
-  index <- (is.na(connect_df$In_p1) | is.na(connect_df$In_p2)) & connect_df$fitness_pick != 0
+  index <- (is.na(connect_df$In_p1) | is.na(connect_df$In_p2)) & (connect_df$fitness_pick != 0)
   connect_df$final_pick[index ] <- connect_df$fitness_pick[index]
   
   new_connect_df <- rbind(nn1$connect_df[nn1$connect_df$Marker %in% connect_df$Marker[connect_df$final_pick == 1],   ],

@@ -4,7 +4,7 @@ add_new_node <- function(nn,max_node, mutation_tracking, max_marker){
   connect_df <- nn$connect_df
   
   # add node
-  marker_pop <- connect_df$Marker[connect_df$Disabled=='N']
+  marker_pop <- connect_df$Marker
   if(length(marker_pop) == 0){
     return(list(nn = nn,
                 mutation_tracking =mutation_tracking,
@@ -16,7 +16,7 @@ add_new_node <- function(nn,max_node, mutation_tracking, max_marker){
   }else{
     index <- sample(marker_pop , 1)  
   }
-  index <- which(connect_df$Marker == index & connect_df$Disabled=='N')
+  index <- which(connect_df$Marker == index )
   connect_df[index, "Disabled"] <- "Y"
   innovation_name = paste0("nn",connect_df$In[index],"-" ,connect_df$Out[index])
   inno_index <- which(mutation_tracking$name == innovation_name)
