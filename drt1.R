@@ -16,6 +16,7 @@ source("nn_mate.R")
 my_fun <- function(x){
   
   return(1/(1+exp(-4.9*x)))
+  #return(ifelse(x>0,1,0))
 }
 
 
@@ -31,7 +32,7 @@ mutation_only_rate <- 0.25
 max_gen <- 5
 weight_mutation_rate <- 0.8
 node_mutation_rate <- 0.03
-link_mutation_rate <- 0.05
+link_mutation_rate <- 0.06
 ## parameter initilization ##
 gen_id <- 0
 
@@ -78,7 +79,10 @@ best_nn <- neat_pop[[which(neat_pop_fitness == max(neat_pop_fitness))[1]]]
 best_fitness <- max(neat_pop_fitness)
 nn_plot(best_nn$connect_df)
 
-nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,0,0))
-nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,0,1))
-nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,1,0))
-nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,1,1))
+eval1 <- nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,0,0))
+eval2 <- nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,0,1))
+eval3 <- nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,1,0))
+eval4 <- nn_eval(nn = best_nn, fun_act = my_fun, input = c(1,1,1))
+
+eval_final <- 4 - (abs(eval1)^2 + abs(1 - eval2)^2 + abs(1-eval3)^2 + abs(eval4)^2)
+eval_final

@@ -5,8 +5,11 @@ neat_pop_bk <- neat_pop
 
 ## get offspring by species 
 pop_rep <- list()
+summary_df <- summary_df[order(summary_df$id),]
 
 for( i in species_summary$species){
+  
+  
   
   rep_id <- summary_df$id[summary_df$species == i]
   
@@ -14,14 +17,12 @@ for( i in species_summary$species){
   
   ## get worse individual and remove it
 
-  worst_id <- summary_df$id[summary_df$fitness_init == summary_df$worst_fit & summary_df$species == i]
-  n_i <- length(summary_df$id[ summary_df$species == i])
+  # worst_id <- summary_df$id[summary_df$fitness_init == summary_df$worst_fit & summary_df$species == i]
+  # n_i <- length(summary_df$id[ summary_df$species == i])
+  # 
   
   ### reproduce within species ###
-  index <- summary_df$species == i & (!summary_df$id %in% worst_id)  
-  if(sum(index) ==0){
-    index <- summary_df$species == i
-  }
+  index <- summary_df$species == i 
   
   p <- neat_pop[index]
   p_fitness <- summary_df$fitness_init[index]
@@ -36,7 +37,7 @@ for( i in species_summary$species){
         p1 <- sample(1:n, 
                replace = T,
                size = offspring_n_crossover
-               , prob = p_fitness/sum(p_fitness)
+               , prob = rank(p_fitness)
                )
         p1_finess <- p_fitness[p1]
         p1 <- p[p1]
@@ -44,7 +45,7 @@ for( i in species_summary$species){
         p2 <- sample(1:n, 
                      replace = T,
                      size = offspring_n_crossover
-                     ,prob = p_fitness/sum(p_fitness)
+                     ,prob = rank(p_fitness)
                      )
         p2_finess <- p_fitness[p2]
         p2 <- p[p2]
@@ -73,13 +74,28 @@ for( i in species_summary$species){
     if(offspring_n_mutation >0 ){
       if(n > 1){
         index <- sample(1:n, replace = T, size = offspring_n_mutation
-                        , prob = p_fitness/sum(p_fitness)
+                        , prob = rank(p_fitness)
                         )
         offspring_mutation <- p[index]
       }else{
         index <- rep(1,offspring_n_mutation)
         offspring_mutation <- p[index]
       }
+      
+      # Do weight mutation
+      # weight_mutation_vec <- (runif(length(offspring_mutation)) <= weight_mutation_rate)
+      # 
+      # offspring_mutation[weight_mutation_vec] <- lapply(offspring_mutation[weight_mutation_vec], 
+      #                                          FUN = nn_mutation,
+      #                                          mutation_tracking = mutation_tracking,  
+      #                                          max_node = max_node, 
+      #                                          max_marker = max_marker,
+      #                                          type = 3, 
+      #                                          scale = 1, 
+      #                                          p = 0.9)
+      # 
+      
+      
     }else{
       offspring_mutation <- NULL
     }
@@ -96,17 +112,19 @@ for( i in species_summary$species){
   
   if(n_offspring > 0){
     
+    
     # Do weight mutation
     weight_mutation_vec <- (runif(n_offspring) <= weight_mutation_rate)
     
     offspring[weight_mutation_vec] <- lapply(offspring[weight_mutation_vec], 
-                                             FUN = nn_mutation,
-                                             mutation_tracking = mutation_tracking,  
-                                             max_node = max_node, 
-                                             max_marker = max_marker,
-                                             type = 3, 
-                                             scale = 1, 
-                                             p = 0.8 )
+                                                      FUN = nn_mutation,
+                                                      mutation_tracking = mutation_tracking,  
+                                                      max_node = max_node, 
+                                                      max_marker = max_marker,
+                                                      type = 3, 
+                                                      scale = 1, 
+                                                      p = 0.9)
+    
     
     node_mutation_vec <- (runif(n_offspring) <= node_mutation_rate)
     link_mutation_vec <- (runif(n_offspring) <= link_mutation_rate)

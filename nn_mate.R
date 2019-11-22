@@ -22,13 +22,26 @@ nn_mate <- function(nn1, nn2, fitness1 , fitness2, disable_p = 0.7){
     new_connect_df$Disabled[new_connect_df$Marker %in% disabled_node_list] <- 'Y'
   }
   
-  new_node_df <- data.frame(node_id = unique(c(new_connect_df$In, new_connect_df$Out)), node_type = "hidden"  )
-  new_node_df$node_type <- as.character(new_node_df$node_type)
-  new_node_df$node_type[new_node_df$node_id %in% nn1$node_df$node_id[nn1$node_df$node_type == "sensor"]] <- "sensor"
-  new_node_df$node_type[new_node_df$node_id %in% nn1$node_df$node_id[nn1$node_df$node_type == "output"]] <- "output"
-  new_node_df <- new_node_df[order(new_node_df$node_id),]
+  new_node_df <-  unique(rbind(nn1$node_df[,c(1,2)],nn2$node_df[,c(1,2)]))
+  new_node_df <- new_node_df[new_node_df$node_id %in% new_connect_df$Out |
+                               new_node_df$node_id %in% new_connect_df$In,]
+  new_node_df$level  <- 1
+  max_level <- 1
+  node_in <- new_node_df$node_id[new_node_df$node_type == "sensor"]
   
+  while(length(node_in) > 0){
+    node_out <- unique(new_connect_df$Out[new_connect_df$In %in% node_in])
+    new_node_df$level[new_node_df$node_id %in% node_out] <- max_level + 1
+    node_in <- node_out
+    max_level <- max_level + 1
+  }
+  new_node_df$level[new_node_df$node_type == "output"] <- max(new_node_df$level) + 1
+  new_node_df$level <- rank(new_node_df$level, ties.method = "min")
+  new_node_df$level <-as.numeric(as.factor(new_node_df$level ))
   nn <- list(node_df = new_node_df, connect_df = new_connect_df)
+  nn_plot(nn)
+  nn$node_df
+  
   return(list(nn))
   
 }

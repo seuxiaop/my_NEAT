@@ -10,10 +10,10 @@ if(gen_id ==0){
   eval_final[is.na(eval_final)] <- 0
   
   pop_rep <- list(neat_pop[[sample(pop_size,1)]])
-  species_vec <- get_sub_species(neat_pop, pop_rep, dist_torlerance=3) 
+  species_vec <- get_sub_species(neat_pop, pop_rep, dist_torlerance=100) 
 }else{
 
-  species_vec <- get_sub_species(neat_pop, pop_rep, dist_torlerance= 3) 
+  species_vec <- get_sub_species(neat_pop, pop_rep, dist_torlerance= 100) 
   eval_final <- neat_pop_fitness
   
 }

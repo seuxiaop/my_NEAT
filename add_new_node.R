@@ -4,7 +4,7 @@ add_new_node <- function(nn,max_node, mutation_tracking, max_marker){
   connect_df <- nn$connect_df
   
   # add node
-  marker_pop <- connect_df$Marker
+  marker_pop <- connect_df$Marker[connect_df$Disabled == "N"]
   if(length(marker_pop) == 0){
     return(list(nn = nn,
                 mutation_tracking =mutation_tracking,
@@ -29,11 +29,20 @@ add_new_node <- function(nn,max_node, mutation_tracking, max_marker){
     )
     
     ## add node
-    new_node <- data.frame(node_id = max_node + 1, node_type = "hidden")
+    new_node <- data.frame(node_id = max_node + 1, 
+                           node_type = "hidden", 
+                           level = (
+                                   node_df$level[node_df$node_id ==connect_df$In[index]] + 0.5
+                                   #node_df$level[node_df$node_id ==connect_df$Out[index]]
+                                   )#/2                                                    
+                             )
     new_innovation$new_node_id <- new_node$node_id
     
     ## update node genome list
     node_df <- rbind(node_df, new_node)
+    node_df$level <- rank(node_df$level, ties.method = "min")
+    node_df$level <-as.numeric(as.factor(node_df$level ))
+    
     
     ##update max_node traker
     max_node <- max_node + 1
@@ -68,8 +77,14 @@ add_new_node <- function(nn,max_node, mutation_tracking, max_marker){
     
   }else{
     ## add node
-    new_node <- data.frame(node_id = mutation_tracking$new_node_id[inno_index], node_type = "hidden")
+    new_node <- data.frame(node_id = mutation_tracking$new_node_id[inno_index], 
+                           node_type = "hidden", 
+                           level = (node_df$level[node_df$node_id ==connect_df$In[index]] + 
+                                      node_df$level[node_df$node_id ==connect_df$Out[index]])/2                                                    
+    )
     node_df <- rbind(node_df, new_node)
+    node_df$level <- rank(node_df$level, ties.method = "min")
+    node_df$level <-as.numeric(as.factor(node_df$level ))
     ## add connection
     new_connect1 <- data.frame(
       In = mutation_tracking$In1[inno_index],

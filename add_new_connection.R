@@ -4,7 +4,7 @@ add_new_connection <- function(nn, max_node,  mutation_tracking, max_marker){
   node_df <- nn$node_df
   connect_df <- nn$connect_df
   
-  node_list <- get_node_info(connect_df)
+  node_list <- get_node_info(nn)
   
   
   # random select a node with "in" capacity

@@ -15,11 +15,12 @@ lines(points_x, points_y)
 }
 
 
-nn_plot <- function(connect_df){
+nn_plot <- function(nn){
 
-  node_list <- get_node_info(connect_df)
-  
-  level_df <- as.data.frame(table(node_list$level))
+  #node_list <- get_node_info(connect_df)
+  node_df <- nn$node_df
+  connect_df <- nn$connect_df
+  level_df <- as.data.frame(table(node_df$level))
   colnames(level_df) <- c("level_id", "cnt")
   level_df$level_id <- as.numeric(level_df$level_id)
   
@@ -27,29 +28,29 @@ nn_plot <- function(connect_df){
   y_lim <- x_lim
   y_step_size <- y_lim/(nrow(level_df) + 1)
   
-  node_list$x <- NA
-  node_list$y <- NA
+  node_df$x <- NA
+  node_df$y <- NA
   
   for(i in level_df$level_id){
     cnt_i <- level_df$cnt[i]
     x_pos <- (1:cnt_i)*(x_lim/(cnt_i + 1))
     y_pos <- i * y_step_size
-    node_list$x[node_list$level == i] <- x_pos
-    node_list$y[node_list$level == i] <- y_pos
+    node_df$x[node_df$level == i] <- x_pos
+    node_df$y[node_df$level == i] <- y_pos
   }
   
-  plot(node_list$x,node_list$y,cex = 4, axes=FALSE, frame.plot = F,
-       ann=FALSE, xlim = c(1,max(node_list$x+1)))
-  text(y ~x, labels=node_id,data=node_list, cex=0.9, font=2)
+  plot(node_df$x,node_df$y,cex = 4, axes=FALSE, frame.plot = F,
+       ann=FALSE, xlim = c(1,max(node_df$x+1)))
+  text(y ~x, labels=node_id,data=node_df, cex=0.9, font=2)
   
   
   
   for(i in 1:nrow(connect_df)){
     
     if(connect_df$Disabled[i] == 'N'){
-      x <- c(node_list$x[node_list$node_id== connect_df$In[i]] , node_list$x[node_list$node_id==connect_df$Out[i]] )
-      y <- c(node_list$y[node_list$node_id==connect_df$In[i]] , node_list$y[node_list$node_id==connect_df$Out[i]] )
-      if(x[1]==x[2] & node_list$level[node_list$node_id==connect_df$In[i]] <  node_list$level[node_list$node_id==connect_df$Out[i]] - 1 ){
+      x <- c(node_df$x[node_df$node_id== connect_df$In[i]] , node_df$x[node_df$node_id==connect_df$Out[i]] )
+      y <- c(node_df$y[node_df$node_id==connect_df$In[i]] , node_df$y[node_df$node_id==connect_df$Out[i]] )
+      if(x[1]==x[2] & node_df$level[node_df$node_id==connect_df$In[i]] <  node_df$level[node_df$node_id==connect_df$Out[i]] - 1 ){
         my_curve(x,y)  
       }else{
         lines(x,y)
