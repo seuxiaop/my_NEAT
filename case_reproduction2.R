@@ -37,7 +37,7 @@ for( i in species_summary$species){
         p1 <- sample(1:n, 
                replace = T,
                size = offspring_n_crossover
-               , prob = rank(p_fitness)
+               , prob = p_fitness^2 #rank(p_fitness)
                )
         p1_finess <- p_fitness[p1]
         p1 <- p[p1]
@@ -45,7 +45,7 @@ for( i in species_summary$species){
         p2 <- sample(1:n, 
                      replace = T,
                      size = offspring_n_crossover
-                     ,prob = rank(p_fitness)
+                     ,prob = p_fitness^2 #rank(p_fitness)
                      )
         p2_finess <- p_fitness[p2]
         p2 <- p[p2]
@@ -63,7 +63,7 @@ for( i in species_summary$species){
       
       offspring_mate <- mapply(FUN = nn_mate, nn1 = p1, nn2 = p2,
                                fitness1 = p1_finess, fitness2 =  p2_finess,
-                               MoreArgs = list( disable_p = 0.7))
+                               MoreArgs = list( disable_p = 0.75))
     }else{
       offspring_mate <- NULL
     }
@@ -74,7 +74,7 @@ for( i in species_summary$species){
     if(offspring_n_mutation >0 ){
       if(n > 1){
         index <- sample(1:n, replace = T, size = offspring_n_mutation
-                        , prob = rank(p_fitness)
+                        , prob = p_fitness^2 #rank(p_fitness)
                         )
         offspring_mutation <- p[index]
       }else{
@@ -122,7 +122,7 @@ for( i in species_summary$species){
                                                       max_node = max_node, 
                                                       max_marker = max_marker,
                                                       type = 3, 
-                                                      scale = 1, 
+                                                      scale = 3, 
                                                       p = 0.9)
     
     
@@ -211,7 +211,13 @@ for( i in species_summary$species){
   }
   
 }
-neat_pop <- neat_pop_next[1:pop_size]
-neat_pop_fitness <- neat_pop_fitness[1:pop_size]
-neat_pop_species <- neat_pop_species[1:pop_size]
+
+if(length(neat_pop_next) == pop_size){
+  neat_pop <- neat_pop_next
+  neat_pop_fitness <- neat_pop_fitness
+  neat_pop_species <- neat_pop_species
+}else{
+  stop("size problem")
+}
+
 

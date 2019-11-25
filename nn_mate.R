@@ -21,6 +21,7 @@ nn_mate <- function(nn1, nn2, fitness1 , fitness2, disable_p = 0.7){
   if(length(disabled_node_list) >0){
     new_connect_df$Disabled[new_connect_df$Marker %in% disabled_node_list] <- 'Y'
   }
+  new_connect_df$Disabled[!new_connect_df$Marker %in% disabled_node_list] <- 'N'
   
   new_node_df <-  unique(rbind(nn1$node_df[,c(1,2)],nn2$node_df[,c(1,2)]))
   new_node_df <- new_node_df[new_node_df$node_id %in% new_connect_df$Out |
@@ -39,8 +40,8 @@ nn_mate <- function(nn1, nn2, fitness1 , fitness2, disable_p = 0.7){
   new_node_df$level <- rank(new_node_df$level, ties.method = "min")
   new_node_df$level <-as.numeric(as.factor(new_node_df$level ))
   nn <- list(node_df = new_node_df, connect_df = new_connect_df)
-  nn_plot(nn)
-  nn$node_df
+  # nn_plot(nn)
+  # nn$node_df
   
   return(list(nn))
   
